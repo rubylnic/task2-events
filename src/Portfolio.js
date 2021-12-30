@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ProjectList from './ProjectList';
 import Toolbar from './Toolbar';
 
-const projects = [{
+const projectsArr = [{
   img: "https://raw.githubusercontent.com/netology-code/ra16-homeworks/master/events-state/filter/img/mon.jpg",
   category: "Business Cards"
 }, {
@@ -55,16 +55,36 @@ const projects = [{
   category: "Flayers"
 }];
 
-function Portfolio (props) {
-  const onSelectFilter = (filter) =>{
-    console.log(filter);
+class Portfolio extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      projects: projectsArr,
+      selected: 'All'
+    };
   }
-  const filters = ["All", "Websites", "Flayers", "Business Cards"];
-  return(
-  <>
-    <ProjectList projects={projects}/>
-    <Toolbar filters={filters} selected="selected" onSelectFilter={(filter) => {console.log(filter)}} />
-  </>
-  )
+
+  render() {
+
+    const onSelectFilter = (evt) => {
+      let selectedFilter = evt.target.dataset.filter;
+      const filterArr = JSON.parse(JSON.stringify(projectsArr));
+      const filteredFilterArr = filterArr.filter(function (key, value) {
+        let filterCategory = key.category;
+        return selectedFilter === filterCategory;
+      })
+      selectedFilter === "All" ? this.setState(state => ({ projects: projectsArr })) : this.setState(state => ({ projects: filteredFilterArr }));
+      this.setState(state => ({ selected: selectedFilter }));
+    }
+    const filters = ["All", "Websites", "Flayers", "Business Cards"];
+
+    return (
+      <>
+        <Toolbar filters={filters} selected={this.state.selected} onSelectFilter={onSelectFilter} />
+        <ProjectList projects={this.state.projects} />
+      </>
+    );
+  }
 }
+
 export default Portfolio;
